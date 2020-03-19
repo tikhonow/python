@@ -1,1 +1,0 @@
-print(len([i for i in list(input()) if not int(i) & 1]))
