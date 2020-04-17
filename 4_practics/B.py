@@ -1,3 +1,4 @@
+#B. Свой map
 def simple_map(operation, values):
     return [operation(i) for i in values]
 

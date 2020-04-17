@@ -1,3 +1,4 @@
+#D. Гематрия
 def num_code(i):
     i = i.upper()
     return ord(i) - ord('A') + 1

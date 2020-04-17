@@ -1,4 +1,4 @@
-# Задача F.пароль
+#F.пароль
 def password_level(password):
     count = [0, 0, 0]
     if len(password) > 5:
