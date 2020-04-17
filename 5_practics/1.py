@@ -1,4 +1,4 @@
-#A.Dt
+#A.Весы
 class Balance:
     def __init__(self):
         self.left = 0
