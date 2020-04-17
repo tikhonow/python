@@ -1,4 +1,4 @@
-#Задача №3769. Продажи (D)
+#Задача №3769. Продажи (shop)
 import sys
 shop = {}
 for i in sys.stdin:
@@ -7,12 +7,11 @@ for i in sys.stdin:
             shop[name].append(item)
     else:
         shop[name] = [item]
-for name in shop:
 for name, item in sorted(shop.items()):
-    print(key +":")
+    print(name +":")
     s = {}
     for val in item:
         s[val[0]] = s.get(val[0], 0) + int(val[1])
-    for key in sorted(s.keys()):
-        print(key, end=" ")
-        print(s[key])
+    for name in sorted(s.keys()):
+        print(name, end=" ")
+        print(s[name])
