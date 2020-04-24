@@ -1,7 +1,7 @@
+#A. Задачи
 n = int(input('Введите количество групп: '))
 all_ =[]
 group = {}
-#A. Задачи
 for i in range(n):
     m = int(input('Введите коичество студентов в группе: '))
     for j in range(m):
