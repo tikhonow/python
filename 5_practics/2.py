@@ -1,3 +1,4 @@
+#C. Minecraft
 class BaseObject:
     def __init__(self,x, y, z):
         x = 6
@@ -5,7 +6,6 @@ class BaseObject:
     def get_coordinates():
         return x,y,z
     
- 
 class Block(BaseObject):
     def shatter():
         x, y, z = None,None,None
