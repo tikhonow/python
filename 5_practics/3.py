@@ -18,3 +18,8 @@ class MyVector(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+v1 = MyVector(-2, 5)
+v2 = MyVector(3, -4)
+v_sum = v1 + v2
+print(v_sum)
