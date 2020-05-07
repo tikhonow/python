@@ -202,6 +202,23 @@ class King:
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
 
+class Bishop:
+    '''Класс слона'''
+
+    def __init__(self, color):
+        self.color = color
+
+    def get_color(self):
+        return self.color
+
+    def char(self):
+        return 'B'
+
+    def can_move(self, board, row, col, row1, col1):
+        return True  # Заглушка
+
+    def can_attack(self, board, row, col, row1, col1):
+        return self.can_move(board, row, col, row1, col1)
 
 
 def main():
