@@ -184,6 +184,25 @@ class Knight:
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
 
+class King:
+    '''Класс короля'''
+
+    def __init__(self, color):
+        self.color = color
+
+    def get_color(self):
+        return self.color
+
+    def char(self):
+        return 'K'
+
+    def can_move(self, board, row, col, row1, col1):
+        return True  # Заглушка
+
+    def can_attack(self, board, row, col, row1, col1):
+        return self.can_move(board, row, col, row1, col1)
+
+
 
 def main():
     # Создаём доску
