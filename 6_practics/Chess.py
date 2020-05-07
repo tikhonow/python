@@ -181,15 +181,13 @@ class Pawn(Piece):
 
         return False
 
+        def can_attack(self, board, row, col, row1, col1):
+        direction = 1 if (self.color == WHITE) else -1
+        return (row + direction == row1
+                and (col + 1 == col1 or col - 1 == col1))
+
 class Knight(Piece):
     '''Класс коня'''
-
-    def __init__(self, color):
-        self.color = color
-
-    def get_color(self):
-        return self.color
-
     def char(self):
         return 'N'  # kNight, буква 'K' уже занята королём
 
@@ -211,13 +209,6 @@ class Knight(Piece):
 
 class King(Piece):
     '''Класс короля'''
-
-    def __init__(self, color):
-        self.color = color
-
-    def get_color(self):
-        return self.color
-
     def char(self):
         return 'K'
 
@@ -229,13 +220,6 @@ class King(Piece):
 
 class Bishop(Piece):
     '''Класс слона'''
-
-    def __init__(self, color):
-        self.color = color
-
-    def get_color(self):
-        return self.color
-
     def char(self):
         return 'B'
 
@@ -255,13 +239,7 @@ class Bishop(Piece):
         return self.can_move(board, row, col, row1, col1)
 
 class Queen(Piece):
-    def __init__(self, color):
-        self.color = color
-        self.is_moved = 0
-
-    def get_color(self):
-        return self.color
-
+    '''Класс ферзя'''
     def char(self):
         return 'Q'
 
