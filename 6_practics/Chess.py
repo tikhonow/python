@@ -26,8 +26,20 @@ def opponent(color):
         return WHITE
 
 def parse_coords(coords):
-    # TODO функция должна принимать список координат в шахматном виде и возвращает row, col, row1, col1
-    pass
+    try:
+        col, row, col1, row1 = coords.split()
+        col, col1 = col.lower(), col1.lower()
+    except ValueError:
+        print('Вы ввели координаты неправильно! Проверьте роаскладку и попробуйте еще раз!')
+        return main()
+    row, row1 = int(row) - 1, int(row1) - 1
+    alphabet = 'abcdefgh'
+    for i in range(8):
+        if alphabet[i] == col:
+            col = i
+        if alphabet[i] == col1:
+            col1 = i
+    return row, col, row1, col1
 
 class Board:
     def __init__(self):
@@ -182,3 +194,7 @@ def main():
             print('Ход успешен')
         else:
             print('Координаты некорректы! Попробуйте другой ход!')
+
+#Запуск программы
+if __name__ == "__main__":
+    main()
