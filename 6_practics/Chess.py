@@ -15,7 +15,6 @@ def print_board(board):  # Распечатать доску в текстово
         print(alphabet[col], end='    ')
     print()
 
-
 def correct_coords(row, col):
     '''Функция проверяет, что координаты (row, col) лежат
     внутри доски'''
@@ -28,6 +27,7 @@ def opponent(color):
         return WHITE
 
 def parse_coords(coords):
+    '''Считывания кординат'''
     try:
         col, row, col1, row1 = coords.split()
         col, col1 = col.lower(), col1.lower()
@@ -44,9 +44,12 @@ def parse_coords(coords):
     return row, col, row1, col1
 
 class Board:
+    '''Класс доски  '''
     def __init__(self):
         self.color = WHITE
         self.field = [[None] * 8 for row in range(8)]
+        #Задаем начальное расположение фигур на доске:
+        #Верх
         self.field[0] = [
             Rook(WHITE), Knight(WHITE), Bishop(WHITE), Queen(WHITE),
             King(WHITE), Bishop(WHITE), Knight(WHITE), Rook(WHITE)
@@ -55,6 +58,7 @@ class Board:
             Pawn(WHITE), Pawn(WHITE), Pawn(WHITE), Pawn(WHITE),
             Pawn(WHITE), Pawn(WHITE), Pawn(WHITE), Pawn(WHITE)
         ]
+        #Внизе
         self.field[6] = [
             Pawn(BLACK), Pawn(BLACK), Pawn(BLACK), Pawn(BLACK),
             Pawn(BLACK), Pawn(BLACK), Pawn(BLACK), Pawn(BLACK)
@@ -109,6 +113,36 @@ class Board:
         self.color = opponent(self.color) # поменять цвет
         return True
 
+    def move_and_promote_pawn(self, row, col, row1, col1, char):
+        if type(self.get_piece(row, col)) is not Pawn:
+            return False
+        new_pawn = None
+        color = self.get_piece(row, col).get_color()
+        if char == 'Q':
+            new_pawn = Queen(color)
+        elif char == 'R':
+            new_pawn = Rook(color)
+        elif char == 'B':
+            new_pawn = Bishop(color)
+        elif char == 'N':
+            new_pawn = Knight(color)
+        if self.move_piece(row, col, row1, col1):
+            self.field[row1][col1] = new_pawn
+            return True
+        return False
+
+    def is_under_attack(self, row1, col1, color):
+        if self.field[row1][col1] is not None:
+            if self.field[row1][col1].color == color:
+                return True
+        for row in range(8):
+            for col in range(8):
+                if self.get_piece(row, col) is not None:
+                    if self.get_piece(row, col).get_color() == color:
+                        if self.get_piece(row, col).can_move(self, row, col, row1, col1):
+                            return True
+        return False
+
 class Piece:
     def __init__(self, color):
         self.color = color
@@ -117,6 +151,7 @@ class Piece:
         return self.color
 
 class Rook(Piece):
+    '''Класс ладьи'''
     def __init__(self, color):
         super().__init__(color)
         self.not_moved = True
@@ -151,6 +186,7 @@ class Rook(Piece):
         self.not_moved = False
 
 class Pawn(Piece):
+    '''Класс пешки'''
     def char(self):
         return 'P'
 
@@ -181,10 +217,9 @@ class Pawn(Piece):
 
         return False
 
-        def can_attack(self, board, row, col, row1, col1):
+    def can_attack(self, board, row, col, row1, col1):
         direction = 1 if (self.color == WHITE) else -1
-        return (row + direction == row1
-                and (col + 1 == col1 or col - 1 == col1))
+        return (row + direction == row1 and (col + 1 == col1 or col - 1 == col1))
 
 class Knight(Piece):
     '''Класс коня'''
@@ -269,8 +304,6 @@ class Queen(Piece):
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
-
-
 
 def main():
     # Создаём доску
