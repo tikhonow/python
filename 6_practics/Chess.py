@@ -240,7 +240,16 @@ class Bishop(Piece):
         return 'B'
 
     def can_move(self, board, row, col, row1, col1):
-        return True  # Заглушка
+        my_row, my_col = row, col
+        step_row = -1 if (row > row1) else 1
+        step_col = -1 if (col > col1) else 1
+        if abs(row - row1) != abs(col - col1):
+            return False
+        for i in range(abs(row - row1) - 1):
+            my_row, my_col = my_row + step_row, my_col + step_col
+            if board.get_piece(my_row, my_col) is not None:
+                return False
+        return True
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
