@@ -11,8 +11,10 @@ def print_board(board):  # Распечатать доску в текстово
         print('     +----+----+----+----+----+----+----+----+')
     print(end='        ')
     for col in range(8):
-        print(chr(col + 65), end='    ')
+        alphabet = 'ABCDEFGH'
+        print(alphabet[col], end='    ')
     print()
+
 
 def correct_coords(row, col):
     '''Функция проверяет, что координаты (row, col) лежат
@@ -179,7 +181,7 @@ class Pawn(Piece):
 
         return False
 
-class Knight:
+class Knight(Piece):
     '''Класс коня'''
 
     def __init__(self, color):
@@ -192,12 +194,22 @@ class Knight:
         return 'N'  # kNight, буква 'K' уже занята королём
 
     def can_move(self, board, row, col, row1, col1):
-        return True  # Заглушка
+        x, y = row, col
+        coords = [
+            (x - 2, y + 1), (x - 2, y - 1),
+            (x - 1, y - 2), (x + 1, y - 2),
+            (x + 2, y - 1), (x + 2, y + 1),
+            (x + 1, y + 2), (x - 1, y + 2)
+        ]
+
+        if (row1, col1) in coords and row1 in range(8) and col1 in range(8):
+            return True
+        return False
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
 
-class King:
+class King(Piece):
     '''Класс короля'''
 
     def __init__(self, color):
@@ -215,7 +227,7 @@ class King:
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
 
-class Bishop:
+class Bishop(Piece):
     '''Класс слона'''
 
     def __init__(self, color):
@@ -233,7 +245,7 @@ class Bishop:
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
 
-class Queen:
+class Queen(Piece):
     def __init__(self, color):
         self.color = color
         self.is_moved = 0
