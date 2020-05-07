@@ -45,9 +45,22 @@ class Board:
     def __init__(self):
         self.color = WHITE
         self.field = [[None] * 8 for row in range(8)]
-#         заполнение доски фигурами
-#         self.field[1][0] = Pawn(WHITE)
-        # TODO заполнить доску фигурами
+        self.field[0] = [
+            Rook(WHITE), Knight(WHITE), Bishop(WHITE), Queen(WHITE),
+            King(WHITE), Bishop(WHITE), Knight(WHITE), Rook(WHITE)
+        ]
+        self.field[1] = [
+            Pawn(WHITE), Pawn(WHITE), Pawn(WHITE), Pawn(WHITE),
+            Pawn(WHITE), Pawn(WHITE), Pawn(WHITE), Pawn(WHITE)
+        ]
+        self.field[6] = [
+            Pawn(BLACK), Pawn(BLACK), Pawn(BLACK), Pawn(BLACK),
+            Pawn(BLACK), Pawn(BLACK), Pawn(BLACK), Pawn(BLACK)
+        ]
+        self.field[7] = [
+            Rook(BLACK), Knight(BLACK), Bishop(BLACK), Queen(BLACK),
+            King(BLACK), Bishop(BLACK), Knight(BLACK), Rook(BLACK)
+        ]
 
     def current_player_color(self):
         return self.color
@@ -219,6 +232,45 @@ class Bishop:
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
+
+class Queen:
+    def __init__(self, color):
+        self.color = color
+        self.is_moved = 0
+
+    def get_color(self):
+        return self.color
+
+    def char(self):
+        return 'Q'
+
+    def can_move(self, board, row, col, row1, col1):
+        my_row, my_col = row, col
+        if board.get_piece(row1, col1) and board.get_piece(row1, col1).get_color() == self.color:
+            return False
+        if row == row1 or col == col1:
+            step = 1 if (row1 >= row) else -1
+            for r in range(row + step, row1, step):
+                if not (board.get_piece(r, col) is None):
+                    return False
+            step = 1 if (col1 >= col) else -1
+            for c in range(col + step, col1, step):
+                if not (board.get_piece(row, c) is None):
+                    return False
+            return True
+        if abs(row - row1) != abs(col - col1):
+            return False
+        step_row = -1 if (row > row1) else 1
+        step_col = -1 if (col > col1) else 1
+        for i in range(abs(row - row1) - 1):
+            my_row, my_col = my_row + step_row, my_col + step_col
+            if not (board.get_piece(my_row, my_col) is None):
+                return False
+        return True
+
+    def can_attack(self, board, row, col, row1, col1):
+        return self.can_move(board, row, col, row1, col1)
+
 
 
 def main():
