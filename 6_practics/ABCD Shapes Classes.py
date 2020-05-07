@@ -338,6 +338,20 @@ def main():
                 cell = cell if cell != ' ' else '-'
                 print(cell, end=' ')
         print()
+    print("Пример 3",'\n')
+    row0 = 2
+    col0 = 2
+    knight = Knight(WHITE)
+    board = Board()
+    for row in range(7, -1, -1):
+        for col in range(8):
+            if row == row0 and col == col0:
+                print(knight.char(), end=' ')
+            elif knight.can_move(board, row0, col0, row, col):
+                print('x', end=' ')
+            else:
+                print('-', end=' ')
+        print()
 
 if __name__ == "__main__":
     main()
