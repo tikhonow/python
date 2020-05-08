@@ -29,7 +29,8 @@ def opponent(color):
 def parse_coords(coords):
     '''Считывания кординат'''
     try:
-        col, row, col1, row1 = coords.split()
+        cords1,cords2 = coords.split()
+        col, row, col1, row1 = cords1[0],cords1[1],cords2[0],cords2[1]
         col, col1 = col.lower(), col1.lower()
     except ValueError:
         print('Вы ввели координаты неправильно! Проверьте роаскладку и попробуйте еще раз!')
@@ -131,16 +132,19 @@ class Board:
             return True
         return False
 
-    def is_under_attack(self, row1, col1, color):
-        if self.field[row1][col1] is not None:
-            if self.field[row1][col1].color == color:
-                return True
-        for row in range(8):
-            for col in range(8):
-                if self.get_piece(row, col) is not None:
-                    if self.get_piece(row, col).get_color() == color:
-                        if self.get_piece(row, col).can_move(self, row, col, row1, col1):
-                            return True
+ 
+    def is_under_attack(self, row, col, color):
+        '''Возращает True, если поле с координатами (row, col)находится под боем хотя бы одной фигуры цвета color.'''
+        for i in range(len(self.field)):
+            for j, piece in enumerate(self.field[i]):
+                if piece is not None and piece.get_color() == color and          piece.can_move(self, i, j, row, col):
+                    return True
+        else:
+             return False
+    
+    def is_piece_moved(self, piece):
+        if piece.is_moved > 0:
+            return True
         return False
 
 class Piece:
@@ -244,11 +248,26 @@ class Knight(Piece):
 
 class King(Piece):
     '''Класс короля'''
+    def __init__(self, color):
+        self.is_moved = 0
+
     def char(self):
         return 'K'
 
     def can_move(self, board, row, col, row1, col1):
-        return True  # Заглушка
+        stepr = row1 - row
+        stepc = col1 - col
+        if not (board.get_piece(row1, col1) is None) and board.cell(row1, col1)[0] == board.cell(row, col)[0]:
+            return False
+
+        if ((stepr == 1 or stepr == -1 or stepr == 0) and (stepc == 1 or stepc == -1 or stepc == 0)) and (0 <= row <= 7) and (0 <= col <= 7):
+            if row == row1 and col == col1:
+                return False
+            if board.is_under_attack(row1, col1):
+                return False
+            return True
+        else:
+            return False
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
@@ -308,7 +327,7 @@ class Queen(Piece):
 def main():
     print("Пример 1",'\n')
     board = Board()
-
+    
     board.field = [([None] * 8) for i in range(8)]
     board.field[0][0] = Rook(WHITE)
     board.field[1][2] = Bishop(WHITE)
@@ -317,7 +336,7 @@ def main():
     for row in range(7, -1, -1):
         for col in range(8):
             if (row, col) in coords:
-                print('W', end = ' ')
+                print('W',end=' ')
             elif board.is_under_attack(row, col, WHITE):
                 print('x', end=' ')
             else:
@@ -326,7 +345,7 @@ def main():
 
     print("Пример 2",'\n')
     board = Board()
-
+    
     board.field = [([None] * 8) for i in range(8)]
     board.field[0][5] = Rook(WHITE)
     board.field[1][2] = Bishop(WHITE)
@@ -336,12 +355,13 @@ def main():
     for row in range(7, -1, -1):
         for col in range(8):
             if (row, col) in coords:
-                print('W', end = ' ')
+                print('W',end=' ')
             elif board.is_under_attack(row, col, WHITE):
                 print('x', end=' ')
             else:
                 print('-', end=' ')
         print()
+
     print("Пример 3",'\n')
     board = Board()
 
@@ -374,6 +394,8 @@ def main():
             else:
                 print('-',end=' ')
         print()
+    print()
+
 #Запуск программы
 if __name__ == "__main__":
     main()
