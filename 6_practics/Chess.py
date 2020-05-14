@@ -88,31 +88,38 @@ class Board:
 
     def move_piece(self, row, col, row1, col1):
         ''' Переместить фигуру из точки (row, col) в точку (row1, col1).
-        Если перемещение возможно, метод выполнит его и вернёт True.
-        Если нет --- вернёт False '''
-
+            Если перемещение возможно, метод выполнит его и вернёт True.
+            Если нет --- вернёт False '''
         if not correct_coords(row, col) or not correct_coords(row1, col1):
-            return False
+            return False # Нельзя пойти за пределы доски
         if row == row1 and col == col1:
-            return False  # нельзя пойти в ту же клетку
-        piece = self.field[row][col]
+            return False  # Нельзя пойти в ту же клетку
+        piece = self.field[row][col]  # "Вытаскиваем фигуру"
         if piece is None:
-            return False
+            return False  # Если не фигура
         if piece.get_color() != self.color:
-            return False
-
-        if self.field[row1][col1] is None:
-            if not piece.can_move(self, row, col, row1, col1):
-                return False
+            return False  # Если фигура не того цвета
+        if self.field[row1][col1] is None:                          # Если клетка, в которую ходим, свободна
+            if not piece.can_move(self, row, col, row1, col1):      # Но если фигура туда пойти не может,
+                return False                                        # Вернет False
+        elif self.field[row1][col1].get_color() == opponent(piece.get_color()):  # Если в клетке - фигура другого цвета
+            if not piece.can_attack(self, row, col, row1, col1):                 # Но если фигура не может ее атаковать
+                return False                                                     # Вернет False
         else:
-            # TODO Если мы перемещаемся на фигуру
-            pass
-
+            return False  # если в клетке - фигура того же цвета, вернет False
+        if isinstance(piece, King) and self.is_under_attack(self, row1, col1):  # Запрет хода королем под шах
+            return False
+        if (self.color == WHITE and self.is_under_attack(self, self.king_white.row, self.king_white.col)) \
+                or (self.color == BLACK and self.is_under_attack(self, self.king_black.row, self.king_black.col)):
+            # Запрет хода, не уводящего короля из-под шаха
+            return False
+        # Если дошли до этого момента, осуществляем ход.
         self.field[row][col] = None  # Снять фигуру.
         self.field[row1][col1] = piece  # Поставить на новое место.
-        self.color = opponent(self.color) # поменять цвет
+        piece.set_position(row1, col1)  # Обновляем позицию фигуры.
+        self.color = opponent(self.color)  # Инверсируем цвет.
         return True
-
+    
     def move_and_promote_pawn(self, row, col, row1, col1, char):
         if type(self.get_piece(row, col)) is not Pawn:
             return False
@@ -305,42 +312,28 @@ class Queen(Piece):
         return 'Q'
 
     def can_move(self, board, row, col, row1, col1):
-        if (row == row1 and col == col1):
+        my_row, my_col = row, col
+        if board.get_piece(row1, col1) and board.get_piece(row1, col1).get_color() == self.color:
             return False
-
-        # ход по вертикали
-        if (col == col1):
+        if row == row1 or col == col1:
             step = 1 if (row1 >= row) else -1
             for r in range(row + step, row1, step):
-                # Если на пути по вертикали есть фигура
                 if not (board.get_piece(r, col) is None):
                     return False
-            return True
-
-        # ход по горизонтали
-        if (row == row1):
             step = 1 if (col1 >= col) else -1
             for c in range(col + step, col1, step):
-                # Если на пути по горизонтали есть фигура
                 if not (board.get_piece(row, c) is None):
                     return False
             return True
-
-        # ход по диагонали
-        if (row != row1 and col != col1):
-            # в ходе по диагонали
-            # смещение по горизонтали == смещению по вертикали
-            if (abs(row - row1) != abs(col - col1)):
+        if abs(row - row1) != abs(col - col1):
+            return False
+        step_row = -1 if (row > row1) else 1
+        step_col = -1 if (col > col1) else 1
+        for i in range(abs(row - row1) - 1):
+            my_row, my_col = my_row + step_row, my_col + step_col
+            if not (board.get_piece(my_row, my_col) is None):
                 return False
-
-            step_row = 1 if (row1 >= row) else -1
-            step_col = 1 if (col1 >= col) else -1
-            for r, c in zip(range(row + step_row, row1, step_row),
-                            range(col + step_col, col1, step_col)):
-                # Если на пути по диагонали есть фигура
-                if not (board.get_piece(r, c) is None):
-                    return False
-            return True
+        return True
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
