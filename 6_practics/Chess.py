@@ -146,6 +146,7 @@ class Board:
 class Piece:
     def __init__(self, color):
         self.color = color
+        self.turns = 0
 
     def get_color(self):
         return self.color
@@ -243,12 +244,29 @@ class Knight(Piece):
         return self.can_move(board, row, col, row1, col1)
 
 class King(Piece):
-    '''Класс короля'''
+    '''Класс короля'''      
     def char(self):
         return 'K'
 
     def can_move(self, board, row, col, row1, col1):
-        return True  # Заглушка
+        if not correct_coords(row1, col1):
+            return False
+        if abs(row1 - row) > 1 or abs(col1 - col) > 1:
+            return False  # если разница между клетками больше 1
+        # рокировка
+        if (row1, col1) == (0, 2):
+            return board.castling_white0()
+        elif (row1, col1) == (0, 6):
+            return board.castling_white7()
+        elif (row1, col1) == (7, 2):
+            return board.castling_black0()
+        elif (row1, col1) == (7, 6):
+            return board.castling_black7()
+        #
+        self.turns += 1
+        return True
+
+
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
@@ -259,15 +277,23 @@ class Bishop(Piece):
         return 'B'
 
     def can_move(self, board, row, col, row1, col1):
-        my_row, my_col = row, col
-        step_row = -1 if (row > row1) else 1
-        step_col = -1 if (col > col1) else 1
-        if abs(row - row1) != abs(col - col1):
+        # конь не может ходить по вертикали\горизонтали
+        if (row == row1 or col == col1):
             return False
-        for i in range(abs(row - row1) - 1):
-            my_row, my_col = my_row + step_row, my_col + step_col
-            if board.get_piece(my_row, my_col) is not None:
+
+        # в ходе по диагонали
+        # смещение по горизонтали == смещению по вертикали
+        if (abs(row - row1) != abs(col - col1)):
+            return False
+
+        step_row = 1 if (row1 >= row) else -1
+        step_col = 1 if (col1 >= col) else -1
+        for r, c in zip(range(row + step_row, row1, step_row),
+                        range(col + step_col, col1, step_col)):
+            # Если на пути по диагонали есть фигура
+            if not (board.get_piece(r, c) is None):
                 return False
+
         return True
 
     def can_attack(self, board, row, col, row1, col1):
@@ -279,28 +305,42 @@ class Queen(Piece):
         return 'Q'
 
     def can_move(self, board, row, col, row1, col1):
-        my_row, my_col = row, col
-        if board.get_piece(row1, col1) and board.get_piece(row1, col1).get_color() == self.color:
+        if (row == row1 and col == col1):
             return False
-        if row == row1 or col == col1:
+
+        # ход по вертикали
+        if (col == col1):
             step = 1 if (row1 >= row) else -1
             for r in range(row + step, row1, step):
+                # Если на пути по вертикали есть фигура
                 if not (board.get_piece(r, col) is None):
                     return False
+            return True
+
+        # ход по горизонтали
+        if (row == row1):
             step = 1 if (col1 >= col) else -1
             for c in range(col + step, col1, step):
+                # Если на пути по горизонтали есть фигура
                 if not (board.get_piece(row, c) is None):
                     return False
             return True
-        if abs(row - row1) != abs(col - col1):
-            return False
-        step_row = -1 if (row > row1) else 1
-        step_col = -1 if (col > col1) else 1
-        for i in range(abs(row - row1) - 1):
-            my_row, my_col = my_row + step_row, my_col + step_col
-            if not (board.get_piece(my_row, my_col) is None):
+
+        # ход по диагонали
+        if (row != row1 and col != col1):
+            # в ходе по диагонали
+            # смещение по горизонтали == смещению по вертикали
+            if (abs(row - row1) != abs(col - col1)):
                 return False
-        return True
+
+            step_row = 1 if (row1 >= row) else -1
+            step_col = 1 if (col1 >= col) else -1
+            for r, c in zip(range(row + step_row, row1, step_row),
+                            range(col + step_col, col1, step_col)):
+                # Если на пути по диагонали есть фигура
+                if not (board.get_piece(r, c) is None):
+                    return False
+            return True
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
