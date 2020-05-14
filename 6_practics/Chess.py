@@ -201,6 +201,7 @@ class Board:
         if piece.is_moved > 0:
             return True
         return False
+
 class Piece:
     def __init__(self, color):
         self.color = color
