@@ -86,6 +86,15 @@ class Board:
         if correct_coords(row, col):
             return self.field[row][col]
 
+    def get_king(self):
+        for r in range(8):
+            for c in range(8):
+                piece = self.field[r][c]
+                if (type(piece) == King
+                        and piece.get_color() == self.color):
+                    return r, c
+        return -1, -1
+        
     def move_piece(self, row, col, row1, col1):
         ''' Переместить фигуру из точки (row, col) в точку (row1, col1).
             Если перемещение возможно, метод выполнит его и вернёт True.
@@ -109,14 +118,12 @@ class Board:
             return False  # если в клетке - фигура того же цвета, вернет False
         if isinstance(piece, King) and self.is_under_attack(self, row1, col1):  # Запрет хода королем под шах
             return False
-        if (self.color == WHITE and self.is_under_attack(self, self.king_white.row, self.king_white.col)) \
-                or (self.color == BLACK and self.is_under_attack(self, self.king_black.row, self.king_black.col)):
+        if (self.color == WHITE and self.is_under_attack(self, self.get_king(),WHITE)) or (self.color == BLACK and self.is_under_attack(self, self.get_king(),BLACK)):
             # Запрет хода, не уводящего короля из-под шаха
             return False
         # Если дошли до этого момента, осуществляем ход.
         self.field[row][col] = None  # Снять фигуру.
         self.field[row1][col1] = piece  # Поставить на новое место.
-        piece.set_position(row1, col1)  # Обновляем позицию фигуры.
         self.color = opponent(self.color)  # Инверсируем цвет.
         return True
     
@@ -154,7 +161,7 @@ class Piece:
     def __init__(self, color):
         self.color = color
         self.turns = 0
-
+ 
     def get_color(self):
         return self.color
 
