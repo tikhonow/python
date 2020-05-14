@@ -145,16 +145,30 @@ class Board:
             return True
         return False
 
-    def is_under_attack(self, row1, col1, color):
-        if self.field[row1][col1] is not None:
-            if self.field[row1][col1].color == color:
-                return True
-        for row in range(8):
-            for col in range(8):
-                if self.get_piece(row, col) is not None:
-                    if self.get_piece(row, col).get_color() == color:
-                        if self.get_piece(row, col).can_move(self, row, col, row1, col1):
-                            return True
+    def is_under_attack(self, board, row, col):
+        """
+        Checks if the cell is under attack
+        Used in identifying check.
+        """
+        if not correct_coords(row, col):
+            return False
+        global figures  # Делаем так, чтобы список был доступен вне функции.
+        figures = []  # Список атакующих фигур (нужно для функции определения мата)
+        for i in self.field:  # Для каждого ряда на доске
+            for piece in i:  # Для каждой клетки в ряду
+                if piece is not None:  # Если клетка содержит фигуру
+                    if self.field[row][col] is None:  # Если анализируемая клетка пуста
+                        # Если цвет фигуры противоположен цвету клетки и фигура может туда переместиться
+                        if piece.get_color() != self.current_player_color() \
+                                and piece.can_move(board, piece.row, piece.col, row, col):
+                            figures.append([piece, piece.row, piece.col])  # Добавляем в список фигуру и ее координаты
+                    else:
+                        # То же, но только сравнивается не с текущим цветом, а с цветом фигуры на анализируемой клетке
+                        if piece.get_color() != self.field[row][col].get_color() \
+                                and piece.can_move(board, piece.row, piece.col, row, col):
+                            figures.append([piece, piece.row, piece.col])
+        if len(figures) > 0:  # Если список непустой
+            return True
         return False
     
     def castling0(self, row, col, row1, col1):
@@ -196,6 +210,165 @@ class Board:
         self.field[num][7] = None
         self.field[num][5] = piece
         return True
+
+    def mate(self, board, row, col):
+        """
+        Identifying mate.
+        """
+        if self.is_under_attack(board, row, col):  # Проверяем, атаковано ли поле с королем
+            possible_move = False  # Возможность побега
+            #  Проверяем, атакованы ли соседние с королём и свободные от его фигур поля
+            moves_king = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]  # Возможные ходы
+            for i in moves_king: # Проходимся по возможным ходам
+                if self.get_piece(row, col).can_move(board, row, col, row + i[0], col + i[1])\
+                        and not self.is_under_attack(board, row + i[0], col + i[1]):
+                    possible_move = True
+
+            if not possible_move:
+                # Ситуация без возможных выходов
+                # Остается либо закрыть короля своей фигурой, либо съесть нападающую фигуру
+                if len(figures) > 1:
+                    return True  # Если атакующих фигур две, то это мат
+                elif self.is_under_attack(board, figures[0][1], figures[0][2]):  # В figures записаны координаты атакующей фигуры
+                    return False  # Если атакующую фигуру можно съесть, то не мат
+                # Если фигуру нельзя съесть, остается только закрыть ее
+                elif isinstance(figures[0][0], Knight):  # Если фигура -- конь, то закрыть ее нельзя
+                    return True
+                # Фигуру также нельзя закрыть в том случае, если она стоит на соседнем поле
+                else:
+                    for i in moves_king:
+                        if (row + i[0], col + i[1]) == (figures[0][1], figures[0][2]):
+                            return True
+
+                    #  Если фигура не стоит на соседнем поле, то происходит проверка, можно ли перекрыть линию атаки
+                    # TODO: check if the player is able to defend the king.
+                    #  Еще не реализовано
+            return False  # Если есть выход, то не мат
+        return False
+    
+    def stalemate_white(self, board):
+        """
+        Checking the stalemate for white.
+        To know if the player is able to move, "go through" all possible options.
+        At the same time, the king mustn't be checked.
+        """
+        if self.is_under_attack(self, self.get_king(),WHITE):  # Если король под шахом, то не пат
+            return False
+        if self.current_player_color() == WHITE:
+            for i in self.field:
+                for piece in i:
+                    if piece is not None and piece.get_color() == WHITE:
+                        row, col = piece.row, piece.col
+                        if isinstance(piece, Pawn):  # У пешки есть 4 возможных варианта хода
+                            moves_pawn = [(1, 0), (2, 0), (1, 1), (1, -1)]
+                            for j in moves_pawn:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False  # Если у стороны есть хотя бы один ход, то это не пат
+
+                        elif isinstance(piece, Rook):
+                            for j in range(8):
+                                if piece.can_move(self, row, col, row, j):  # Проходимся по ряду, где стоит ладья
+                                    return False
+                                elif piece.can_move(self, row, col, j, col):  # И по столбцу
+                                    return False
+
+                        elif isinstance(piece, Bishop):
+                            # Если слон может пойти хотя бы на одну клетку по диагонали, то это не пат
+                            moves_bishop = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+                            for j in moves_bishop:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False
+
+                        elif isinstance(piece, Knight):
+                            # У коня 8 вариантов хода
+                            moves_knight = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
+                            for j in moves_knight:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False
+
+                        elif isinstance(piece, Queen):
+                            # Объединим условия ладьи и слона
+                            for j in range(8):
+                                if piece.can_move(self, row, col, row, j):
+                                    return False
+                                elif piece.can_move(self, row, col, j, col):
+                                    return False
+
+                            moves_queen = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+                            for j in moves_queen:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False
+
+                        elif isinstance(piece, King):
+                            moves_king = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
+                            for j in moves_king:
+                                if piece.can_move(board, row, col, row + j[0], col + j[1]) \
+                                        and not self.is_under_attack(board, row + j[0], col + j[1]):
+                                    return False
+            return True  # Если ни одного хода не найдено, то это пат
+        return False
+
+    def stalemate_black(self, board):
+        """
+        Checking the stalemate for black.
+        To know if the player is able to move, "go through" all possible options.
+        At the same time, the king mustn't be checked.
+        """
+        if self.is_under_attack(self, self.get_king(),BLACK):  # Если король под шахом, то не пат
+            return False
+        if self.current_player_color() == BLACK:
+            for i in self.field:
+                for piece in i:
+                    if piece is not None and piece.get_color() == BLACK:
+                        row, col = piece.row, piece.col
+                        if isinstance(piece, Pawn):  # У пешки есть 4 возможных варианта хода
+                            moves_pawn = [(1, 0), (2, 0), (1, 1), (1, -1)]
+                            for j in moves_pawn:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False  # Если у стороны есть хотя бы один ход, то это не пат
+
+                        elif isinstance(piece, Rook):
+                            for j in range(8):
+                                if piece.can_move(self, row, col, row, j):
+                                    return False
+                                elif piece.can_move(self, row, col, j, col):
+                                    return False
+
+                        elif isinstance(piece, Bishop):
+                            # Если слон может пойти хотя бы на одну клетку по диагонали, то это не пат
+                            moves_bishop = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+                            for j in moves_bishop:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False
+
+                        elif isinstance(piece, Knight):
+                            # У коня 8 вариантов хода
+                            moves_knight = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
+                            for j in moves_knight:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False
+
+                        elif isinstance(piece, Queen):
+                            # Объединим условия ладьи и слона
+                            for j in range(8):
+                                if piece.can_move(self, row, col, row, j):
+                                    return False
+                                elif piece.can_move(self, row, col, j, col):
+                                    return False
+
+                            moves_queen = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+                            for j in moves_queen:
+                                if piece.can_move(self, row, col, row + j[0], col + j[1]):
+                                    return False
+
+                        elif isinstance(piece, King):
+                            moves_king = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
+                            for j in moves_king:
+                                if piece.can_move(board, row, col, row + j[0], col + j[1]) \
+                                        and not self.is_under_attack(board, row + j[0], col + j[1]):
+                                    return False
+            return True  # Если ни одного хода не найдено, то это пат
+        return False
 
     def is_piece_moved(self, piece):
         if piece.is_moved > 0:
