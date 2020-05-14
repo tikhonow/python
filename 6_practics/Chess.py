@@ -156,7 +156,51 @@ class Board:
                         if self.get_piece(row, col).can_move(self, row, col, row1, col1):
                             return True
         return False
+    
+    def castling0(self, row, col, row1, col1):
+        num = 0 if self.color == WHITE else 7
+        if row != num or col != 4:
+            return False
+        elif row1 != num or col1 != 2:
+            return False
+        elif self.is_piece_moved(self.get_piece(num, 4)) or self.is_piece_moved(self.get_piece(num, 0)):
+            return False
+        else:
+            for c in range(1, 4):
+                if self.get_piece(num, c) is not None or self.is_under_attack(num, c, opponent(self.color)):
+                    return False
+        piece = self.get_piece(num, 4)
+        self.field[num][4] = None
+        self.field[num][2] = piece
+        piece = self.get_piece(num, 0)
+        self.field[num][0] = None
+        self.field[num][3] = piece
+        return True
 
+    def castling7(self, row, col, row1, col1):
+        num = 0 if self.color == WHITE else 7
+        if row != num or col != 4:
+            return False
+        elif row1 != num or col1 != 6:
+            return False
+        elif self.is_piece_moved(self.get_piece(num, 4)) or self.is_piece_moved(self.get_piece(num, 7)):
+            return False
+        else:
+            for c in range(5, 7):
+                if self.get_piece(num, c) is not None or self.is_under_attack(num, c, opponent(self.color)):
+                    return False
+        piece = self.get_piece(num, 4)
+        self.field[num][4] = None
+        self.field[num][6] = piece
+        piece = self.get_piece(num, 0)
+        self.field[num][7] = None
+        self.field[num][5] = piece
+        return True
+
+    def is_piece_moved(self, piece):
+        if piece.is_moved > 0:
+            return True
+        return False
 class Piece:
     def __init__(self, color):
         self.color = color
@@ -269,13 +313,13 @@ class King(Piece):
             return False  # если разница между клетками больше 1
         # рокировка
         if (row1, col1) == (0, 2):
-            return board.castling_white0()
+            return board.castling0(self, row, col, row1, col1)
         elif (row1, col1) == (0, 6):
-            return board.castling_white7()
+            return board.castling0(self, row, col, row1, col1)
         elif (row1, col1) == (7, 2):
-            return board.castling_black0()
+            return board.castling7(self, row, col, row1, col1)
         elif (row1, col1) == (7, 6):
-            return board.castling_black7()
+            return board.castling7(self, row, col, row1, col1)
         #
         self.turns += 1
         return True
