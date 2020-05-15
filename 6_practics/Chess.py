@@ -74,6 +74,25 @@ class Board:
     def current_player_color(self):
         return self.color
 
+    def promotion(self, row, col, row1, col1, char):
+        if type(self.get_piece(row, col)) is not Pawn:
+            return False
+        new_pawn = None
+        color = self.get_piece(row, col).get_color()
+        if char == 'Q':
+            new_pawn = Queen(color)
+        elif char == 'R':
+            new_pawn = Rook(color)
+        elif char == 'B':
+            new_pawn = Bishop(color)
+        elif char == 'N':
+            new_pawn = Knight(color)
+        if self.move_piece(row, col, row1, col1):
+            self.field[row1][col1] = new_pawn
+            new_pawn = None
+            return True
+        return False
+
     def cell(self, row, col):
         '''Возвращает строку из двух символов. Если в клетке (row, col)
         находится фигура, символы цвета и фигуры. Если клетка пуста,
@@ -112,15 +131,6 @@ class Board:
                 return self.castling0()
             else:
                 return self.castling7()
-        #Превращение пешки
-        if type(piece) is Pawn:
-            if ((self.color == WHITE and row1 - row == 1 and row1 == 7) or 
-                    (self.color == BLACK and row - row1 == 1 and row1 == 0)):
-                char = input('Вы дошли до края доски. Кем хотите стать? (R (ладья), N (конь), B (слон) , Q (ферзь)) ').upper()
-                if char in ['R', 'N', 'B', 'Q']:
-                    return self.promotion(row, col, row1, col1, char)
-                else:
-                    return False
 
         if self.field[row1][col1] is None:
             if not piece.can_move(self, row, col, row1, col1):
@@ -137,24 +147,7 @@ class Board:
         self.color = opponent(self.color) # поменять цвет
         return True
 
-    def promotion(self, row, col, row1, col1, char):
-        if type(self.get_piece(row, col)) is not Pawn:
-            return False
-        new_pawn = None
-        color = self.get_piece(row, col).get_color()
-        if char == 'Q':
-            new_pawn = Queen(color)
-        elif char == 'R':
-            new_pawn = Rook(color)
-        elif char == 'B':
-            new_pawn = Bishop(color)
-        elif char == 'N':
-            new_pawn = Knight(color)
-        if self.move_piece(row, col, row1, col1):
-            self.field[row1][col1] = new_pawn
-            return True
-        return False
-
+    
     
     def is_under_attack(self, row1, col1, color):
         global enemy
@@ -318,11 +311,12 @@ class Knight(Piece):
         return 'N'  # kNight, буква 'K' уже занята королём
 
     def can_move(self, board, row, col, row1, col1):
-        if not correct_coords(row1, col1):
+        if (row == row1 or col == col1):
             return False
-        res = [abs(col - col1), abs(row - row1)]
-        if res[0] == 1 and res[1] == 2:  # разница между столбцами должна быть 1, между рядами - 2
+
+        if (abs(row1 - row) + abs(col1 - col) == 3):
             return True
+
         return False
 
     def can_attack(self, board, row, col, row1, col1):
@@ -420,8 +414,15 @@ def main():
             break
 
         row, col, row1, col1 = parse_coords(command)
-
-        if board.move_piece(row, col, row1, col1):
+        if (row1 == 0 or row1 == 7) and type(board.get_piece(row, col)) is Pawn:
+            print("Введите символ для превращения пешки")
+            print("Q - королева")
+            print("R - ладья")
+            print("N - конь")
+            print("B - слон")
+            symbol = input()
+            board.promotion(row, col, row1, col1, symbol)
+        elif board.move_piece(row, col, row1, col1):
             print('Ход успешен')
         else:
             print('Координаты некорректы! Попробуйте другой ход!')
