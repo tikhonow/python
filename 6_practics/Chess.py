@@ -1,6 +1,7 @@
 WHITE = 1
 BLACK = 2
 
+'''Дополнительные методы'''
 def print_board(board):  # Распечатать доску в текстовом виде
     print('     +----+----+----+----+----+----+----+----+')
     for row in range(7, -1, -1):
@@ -44,6 +45,7 @@ def parse_coords(coords):
             col1 = i
     return row, col, row1, col1
 
+'''Классы фигур'''
 class Board:
     '''Класс доски  '''
     def __init__(self):
@@ -102,11 +104,19 @@ class Board:
         if piece.get_color() != self.color:
             return False
 
+        # рокировка характерна тем, что король только так 
+        # может сделать 2 шага по горизонтали
+        if type(piece) is King and abs(col1 - col) == 2:
+            #производим нужную рокировку в зависимости от цвета фигур
+            if self.color == WHITE:
+                return self.castling0()
+            else:
+                return self.castling7()
         #Превращение пешки
         if type(piece) is Pawn:
             if ((self.color == WHITE and row1 - row == 1 and row1 == 7) or 
                     (self.color == BLACK and row - row1 == 1 and row1 == 0)):
-                char = input('На какую фигуру поменять? (R, N, B, Q) ').upper()
+                char = input('Вы дошли до края доски. Кем хотите стать? (R (ладья), N (конь), B (слон) , Q (ферзь)) ').upper()
                 if char in ['R', 'N', 'B', 'Q']:
                     return self.promotion(row, col, row1, col1, char)
                 else:
@@ -116,7 +126,7 @@ class Board:
             if not piece.can_move(self, row, col, row1, col1):
                 return False
         else:
-            # Если мы перемещаемся на фигуру
+        #Если мы перемещаемся на фигуру
             if self.field[row1][col1].get_color() == self.color:
                 return False
             if not piece.can_attack(self, row, col, row1, col1):
@@ -161,12 +171,78 @@ class Board:
                             return True
         return False
 
+    def find_me_a_king(self):
+        for r in range(8):
+            for c in range(8):
+                piece = self.field[r][c]
+                if (type(piece) == King
+                        and piece.get_color() == self.color):
+                    return r, c
+        return 100, 24
+    
+    def castling0(self):
+        if self.color == WHITE:
+            row = 0
+        else:
+            row = 7
+        if not isinstance(self.field[row][0], Rook):
+            return False
+        if not isinstance(self.field[row][4], King):
+            return False
+        if self.field[row][0].is_moved():
+            return False
+        if self.field[row][4].is_moved():
+            return False
+        if (self.field[row][1] is not None or self.field[row][2] is not None or
+           self.field[row][3] is not None):
+            return False
+        
+        self.field[row][3] = self.field[row][0]
+        self.field[row][2] = self.field[row][4]
+        self.field[row][0] = None
+        self.field[row][4] = None
+        self.field[row][2].set_moved()
+        self.field[row][3].set_moved()
+        self.color = opponent(self.color)
+        return True
+        
+    def castling7(self):
+        if self.color == WHITE:
+            row = 0
+        else:
+            row = 7
+        if not isinstance(self.field[row][7], Rook):
+            return False
+        if not isinstance(self.field[row][4], King):
+            return False
+        if self.field[row][7].is_moved():
+            return False
+        if self.field[row][4].is_moved():
+            return False
+        if self.field[row][5] is not None or self.field[row][6] is not None:
+            return False
+        
+        self.field[row][5] = self.field[row][7]
+        self.field[row][6] = self.field[row][4]
+        self.field[row][7] = None
+        self.field[row][4] = None
+        self.field[row][5].set_moved()
+        self.field[row][6].set_moved()
+        self.color = opponent(self.color)
+        return True
+        
 class Piece:
     def __init__(self, color):
         self.color = color
 
     def get_color(self):
         return self.color
+    
+    def set_moved(self):
+        self.moved = True
+        
+    def is_moved(self):
+        return self.moved
 
 class Rook(Piece):
     '''Класс ладьи'''
@@ -194,14 +270,11 @@ class Rook(Piece):
             # Если на пути по вертикали есть фигура
             if not (board.get_piece(row, c) is None):
                 return False
-        self.moved()
+
         return True
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
-
-    def moved(self):
-        self.not_moved = False
 
 class Pawn(Piece):
     '''Класс пешки'''
@@ -245,15 +318,10 @@ class Knight(Piece):
         return 'N'  # kNight, буква 'K' уже занята королём
 
     def can_move(self, board, row, col, row1, col1):
-        x, y = row, col
-        coords = [
-            (x - 2, y + 1), (x - 2, y - 1),
-            (x - 1, y - 2), (x + 1, y - 2),
-            (x + 2, y - 1), (x + 2, y + 1),
-            (x + 1, y + 2), (x - 1, y + 2)
-        ]
-
-        if (row1, col1) in coords and row1 in range(8) and col1 in range(8):
+        if not correct_coords(row1, col1):
+            return False
+        res = [abs(col - col1), abs(row - row1)]
+        if res[0] == 1 and res[1] == 2:  # разница между столбцами должна быть 1, между рядами - 2
             return True
         return False
 
@@ -265,8 +333,12 @@ class King(Piece):
     def char(self):
         return 'K'
 
+    
     def can_move(self, board, row, col, row1, col1):
-        return True  # Заглушка
+        if not correct_coords(row1, col1):
+            return False
+        if abs(row1 - row) > 1 or abs(col1 - col) > 1:
+            return False  # если разница между клетками больше 1
 
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
@@ -324,6 +396,7 @@ class Queen(Piece):
     def can_attack(self, board, row, col, row1, col1):
         return self.can_move(board, row, col, row1, col1)
 
+'''Главная функция, посредством которой запускается игра'''
 def main():
     # Создаём доску
     board = Board()
@@ -352,7 +425,26 @@ def main():
             print('Ход успешен')
         else:
             print('Координаты некорректы! Попробуйте другой ход!')
+        #мат
+        row_king, col_king = board.find_me_a_king()
+        if row_king == 100 and col_king == 24:
+            print_board(board)
+            winner = 'черных' if board.color == WHITE else 'белых'
+            print(f'Мат! Победа {winner}!')
+            break
+        #Шах
 
+        if board.is_under_attack(row_king, col_king, opponent(board.color)):
+            side = 'Черному королю,' if board.color == BLACK else 'Белому королю,' 
+            print(f'{side} объявлен ШАХ!!! ААААААААААААА')
+        else:
+            pass
 #Запуск программы
+#status = input('НАЧАТЬ ИГРУ?  Y / N ')
+#if status == 'Y':
+ #   main()
+#else:
+ #   raise SystemExit
+
 if __name__ == "__main__":
     main()
