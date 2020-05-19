@@ -11,7 +11,14 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>HTML Editor</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>resources/images/icon.png</normaloff>resources/images/icon.png</iconset>
+  </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -105,8 +112,8 @@ p, li { white-space: pre-wrap; }
   <action name="action">
    <property name="icon">
     <iconset>
-     <activeon>images/question.png</activeon>
-    </iconset>
+     <normaloff>resources/images/question.png</normaloff>
+     <activeon>images/question.png</activeon>resources/images/question.png</iconset>
    </property>
    <property name="text">
     <string>Информация</string>
@@ -118,8 +125,8 @@ p, li { white-space: pre-wrap; }
   <action name="action_2">
    <property name="icon">
     <iconset>
-     <activeon>images/disk.png</activeon>
-    </iconset>
+     <normaloff>resources/images/disk.png</normaloff>
+     <activeon>images/disk.png</activeon>resources/images/disk.png</iconset>
    </property>
    <property name="text">
     <string>Сохранить</string>
@@ -131,8 +138,8 @@ p, li { white-space: pre-wrap; }
   <action name="action_3">
    <property name="icon">
     <iconset>
-     <activeon>images/printer.png</activeon>
-    </iconset>
+     <normaloff>resources/images/printer.png</normaloff>
+     <activeon>images/printer.png</activeon>resources/images/printer.png</iconset>
    </property>
    <property name="text">
     <string>Печать</string>
@@ -144,8 +151,8 @@ p, li { white-space: pre-wrap; }
   <action name="action_4">
    <property name="icon">
     <iconset>
-     <activeon>images/arrow-curve-180-left.png</activeon>
-    </iconset>
+     <normaloff>resources/images/arrow-curve-180-left.png</normaloff>
+     <activeon>images/arrow-curve-180-left.png</activeon>resources/images/arrow-curve-180-left.png</iconset>
    </property>
    <property name="text">
     <string>Выход</string>
