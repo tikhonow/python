@@ -200,7 +200,7 @@ QPushButton:hover {
 }</string>
         </property>
         <property name="text">
-         <string>%</string>
+         <string>)</string>
         </property>
         <property name="shortcut">
          <string>R</string>
@@ -460,7 +460,7 @@ QPushButton:hover {
 }</string>
         </property>
         <property name="text">
-         <string>+/-</string>
+         <string>(</string>
         </property>
         <property name="shortcut">
          <string>M</string>

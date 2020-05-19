@@ -112,14 +112,14 @@ class Ui_MainWindow(object):
 "")
         self.pushButton_n0.setObjectName("pushButton_n0")
         self.gridLayout.addWidget(self.pushButton_n0, 5, 0, 1, 2)
-        self.pushButton_mr = QtWidgets.QPushButton(self.centralWidget)
-        self.pushButton_mr.setMinimumSize(QtCore.QSize(0, 50))
+        self.pushButton_sk_right = QtWidgets.QPushButton(self.centralWidget)
+        self.pushButton_sk_right.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
         font.setPointSize(27)
         font.setBold(False)
         font.setWeight(50)
-        self.pushButton_mr.setFont(font)
-        self.pushButton_mr.setStyleSheet("QPushButton {\n"
+        self.pushButton_sk_right.setFont(font)
+        self.pushButton_sk_right.setStyleSheet("QPushButton {\n"
 "  background-color: rgb(215, 215, 215);\n"
 "  border: 1px solid gray;\n"
 "}\n"
@@ -130,8 +130,8 @@ class Ui_MainWindow(object):
 "QPushButton:hover {\n"
 "    background: rgba(220, 220, 220, 0.8);\n"
 "}")
-        self.pushButton_mr.setObjectName("pushButton_mr")
-        self.gridLayout.addWidget(self.pushButton_mr, 1, 3, 1, 1)
+        self.pushButton_sk_right.setObjectName("pushButton_sk_right")
+        self.gridLayout.addWidget(self.pushButton_sk_right, 1, 3, 1, 1)
         self.pushButton_n4 = QtWidgets.QPushButton(self.centralWidget)
         self.pushButton_n4.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
@@ -258,14 +258,14 @@ class Ui_MainWindow(object):
 "")
         self.pushButton_n9.setObjectName("pushButton_n9")
         self.gridLayout.addWidget(self.pushButton_n9, 2, 3, 1, 1)
-        self.pushButton_m = QtWidgets.QPushButton(self.centralWidget)
-        self.pushButton_m.setMinimumSize(QtCore.QSize(0, 50))
+        self.pushButton_sk_left = QtWidgets.QPushButton(self.centralWidget)
+        self.pushButton_sk_left.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
         font.setPointSize(27)
         font.setBold(False)
         font.setWeight(50)
-        self.pushButton_m.setFont(font)
-        self.pushButton_m.setStyleSheet("QPushButton {\n"
+        self.pushButton_sk_left.setFont(font)
+        self.pushButton_sk_left.setStyleSheet("QPushButton {\n"
 "  background-color: rgb(215, 215, 215);\n"
 "  border: 1px solid gray;\n"
 "}\n"
@@ -276,8 +276,8 @@ class Ui_MainWindow(object):
 "QPushButton:hover {\n"
 "    background: rgba(220, 220, 220, 0.8);\n"
 "}")
-        self.pushButton_m.setObjectName("pushButton_m")
-        self.gridLayout.addWidget(self.pushButton_m, 1, 1, 1, 1)
+        self.pushButton_sk_left.setObjectName("pushButton_sk_left")
+        self.gridLayout.addWidget(self.pushButton_sk_left, 1, 1, 1, 1)
         self.pushButton_n2 = QtWidgets.QPushButton(self.centralWidget)
         self.pushButton_n2.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
@@ -464,26 +464,26 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "0"))
         self.pushButton_n8.setText(_translate("MainWindow", "8"))
         self.pushButton_n8.setShortcut(_translate("MainWindow", "8"))
-        self.pushButton_div.setText(_translate("MainWindow", "÷"))
+        self.pushButton_div.setText(_translate("MainWindow", "/"))
         self.pushButton_div.setShortcut(_translate("MainWindow", "/"))
         self.pushButton_n0.setText(_translate("MainWindow", "0"))
         self.pushButton_n0.setShortcut(_translate("MainWindow", "0"))
-        self.pushButton_mr.setText(_translate("MainWindow", "%"))
-        self.pushButton_mr.setShortcut(_translate("MainWindow", "R"))
+        self.pushButton_sk_right.setText(_translate("MainWindow", ")"))
+        self.pushButton_sk_right.setShortcut(_translate("MainWindow", "R"))
         self.pushButton_n4.setText(_translate("MainWindow", "4"))
         self.pushButton_n4.setShortcut(_translate("MainWindow", "4"))
         self.pushButton_n3.setText(_translate("MainWindow", "3"))
         self.pushButton_n3.setShortcut(_translate("MainWindow", "3"))
         self.pushButton_n7.setText(_translate("MainWindow", "7"))
         self.pushButton_n7.setShortcut(_translate("MainWindow", "7"))
-        self.pushButton_mul.setText(_translate("MainWindow", "x"))
+        self.pushButton_mul.setText(_translate("MainWindow", "*"))
         self.pushButton_mul.setShortcut(_translate("MainWindow", "*"))
         self.pushButton_eq.setText(_translate("MainWindow", "="))
         self.pushButton_eq.setShortcut(_translate("MainWindow", "Return"))
         self.pushButton_n9.setText(_translate("MainWindow", "9"))
         self.pushButton_n9.setShortcut(_translate("MainWindow", "9"))
-        self.pushButton_m.setText(_translate("MainWindow", "+/-"))
-        self.pushButton_m.setShortcut(_translate("MainWindow", "M"))
+        self.pushButton_sk_left.setText(_translate("MainWindow", "("))
+        self.pushButton_sk_left.setShortcut(_translate("MainWindow", "M"))
         self.pushButton_n2.setText(_translate("MainWindow", "2"))
         self.pushButton_n2.setShortcut(_translate("MainWindow", "2"))
         self.pushButton_ac.setText(_translate("MainWindow", "AC"))
@@ -500,7 +500,4 @@ class Ui_MainWindow(object):
         self.pushButton_sub.setShortcut(_translate("MainWindow", "-"))
         self.pushButton_add.setText(_translate("MainWindow", "+"))
         self.pushButton_add.setShortcut(_translate("MainWindow", "+"))
-        self.actionExit.setText(_translate("MainWindow", "Выйти"))
-        self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
-        self.actionReset.setText(_translate("MainWindow", "Обновить"))
-        self.actionReset.setShortcut(_translate("MainWindow", "Ctrl+R"))
+
