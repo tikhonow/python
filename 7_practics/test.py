@@ -15,7 +15,13 @@ class HtmlEditor(QtWidgets.QMainWindow, design.Ui_MainWindow):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.action_4.triggered.connect(self.close_application)#инициализируем кнопку выхода из программы
-
+        self.pushButton.clicked.connect(self.parse_text)
+        #работа с текстом
+    def parse_text(self):
+        textbox = self.plainTextEdit # поле для ввода текста
+        text = textbox.toPlainText()
+        self.textBrowser.append(text)
+        
     def close_application(self):
         sys.exit()
 def main():
