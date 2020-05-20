@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 zero_error = 'Делить на 0' + '\n' + 'нельзя !'
-uncorrect = 'Ошибка!' + '\n' + 'Данные не верны !'
+uncorrect = 'Неправильная' + '\n' + 'запись!'
 class Calculator(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -33,7 +33,7 @@ class Calculator(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.pushButton_ac.clicked.connect(self.res)
 
     def print_l(self):
-        if self.label.text() == '0' or self.label.text() == zero_error:
+        if self.label.text() == '0' or self.label.text() == zero_error or self.label.text() == uncorrect:
             self.label.setText('')
         sender = self.label.text() + self.sender().text()
         self.label.setText(sender)
@@ -41,7 +41,6 @@ class Calculator(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def calc(self):
         try:
             answer = eval(self.label.text())
-            print(answer)
             self.label.setText(str(answer))
         except ArithmeticError:
             self.label.setText(str(zero_error))
