@@ -161,7 +161,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "KFC заказ"))
         self.check_bur.setText(_translate("MainWindow", "Чизбургер(80р)"))
         self.check_ice.setText(_translate("MainWindow", "Мороженное (69р)"))
         self.check_five.setText(_translate("MainWindow", "Ланчбокс (200р)"))
