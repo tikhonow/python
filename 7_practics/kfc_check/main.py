@@ -17,19 +17,20 @@ class HtmlEditor(QtWidgets.QMainWindow, design.Ui_MainWindow):
         if self.check_ice.isChecked() or self.spin_ice.value()!= 0:
             ice = self.check(self.check_ice.text(),"ice")
             print(ice)
-        elif self.check_bur.isChecked():
+        if self.check_bur.isChecked() or self.spin_bur.value()!= 0:
             bur = self.check(self.check_bur.text(),"bur")
             print(bur)
-        elif self.check_five.isChecked():
+        if self.check_five.isChecked() or self.spin_five.value()!= 0:
             five = self.check(self.check_five.text(),"five")
             print(five)
-        elif self.check_kur.isChecked():
+        if self.check_kur.isChecked() or self.spin_kur.value()!= 0:
             kur = self.check(self.check_kur.text(),"kur")
             print(kur)
 
     def check(self,string1,name1):
         price = re.findall('(\d+)', string1)
-        count = getattr(self, 'spin_%s' % name1).value()
+        #count = getattr(self, 'spin_%s' % name1).value()
+        count = 1 if getattr(self, 'spin_%s' % name1).value() == 0 else getattr(self, 'spin_%s' % name1).value()
         price = int(price[0]) * count
         pattern = re.compile(r'\w+')
         string1 = pattern.search(string1).group()
