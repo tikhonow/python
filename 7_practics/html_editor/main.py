@@ -54,7 +54,7 @@ class HtmlEditor(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def printer(self):
         dlg = QPrintDialog()
         if dlg.exec_():
-            textbox = self.plainTextEdit  
+            self.textbox = self.plainTextEdit  
             self.textbox.print_(dlg.printer())
             
     def info(self):
@@ -69,7 +69,6 @@ def main():
     window = HtmlEditor()  # Создаём объект класса HtmlEditor
     window.show()  # Показываем окно
     app.exec_()  # и запускаем приложение
-
 
 if __name__ == '__main__':  # Если мы запускаем файл напрямую, а не импортируем
     main()  # то запускаем функцию main()
