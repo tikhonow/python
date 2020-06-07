@@ -2,6 +2,7 @@
 # для работы с таблицами в PyQT существует класс QTableWidget. 
 
 import sys
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QTableWidgetItem, QTableWidget, QHBoxLayout
 import csv
 
@@ -12,7 +13,7 @@ class MyWidget(QWidget):
         self.sum = 0.0
         self.loadUI()
 
-        self.loadTable('8_practics/rating_new.csv')
+        self.loadTable('8_practics/rating.csv')
 
     def loadUI(self):
         self.setGeometry(100, 100, 450, 300)
@@ -30,22 +31,25 @@ class MyWidget(QWidget):
             self.table.setRowCount(0)
             for i, row in enumerate(reader):
                 self.table.setRowCount(self.table.rowCount() + 1)
+                
+                sum = 0
+                color = 'white'
+                for j in range(3, 10, 1):
+                    sum += float(row[j].replace(',','.')) / 7
+                if sum > 95:
+                    color = '#99ff99'
+                elif sum < 95 and sum > 80:
+                    color = '#ffcc00'
+                elif sum < 80 and sum > 60:
+                    color = '#ff496c'
+
                 for j, elem in enumerate(row):
                     self.table.setItem(i, j, QTableWidgetItem(elem))
-                row.pop(0)
-                ar = ((row))
-                sum = 0
-                for i in ar:
-                    sum += int(i)
-                print(sum)
+                    self.table.item(i,j).setBackground(QtGui.QColor(color))
 
-                    
+           
         self.table.resizeColumnsToContents()
                 
-    def colorRow(self, row, color):
-        for i in range(self.table.columnCount()):
-            self.table.item(row, i).setBackground(color)
-
 
 app = QApplication(sys.argv)
 ex = MyWidget()
