@@ -13,7 +13,7 @@ class MyWidget(QWidget):
         self.sum = 0.0
         self.loadUI()
 
-        self.loadTable('8_practics/rating.csv')
+        self.loadTable('8_practics/rating1.csv')
 
     def loadUI(self):
         self.setGeometry(100, 100, 450, 300)
@@ -35,7 +35,7 @@ class MyWidget(QWidget):
                 sum = 0
                 color = 'white'
                 for j in range(3, 10, 1):
-                    sum += float(row[j].replace(',','.')) / 7
+                    sum += float(row[j].replace(',','.')) / 8
                 if sum > 95:
                     color = '#99ff99'
                 elif sum < 95 and sum > 80:
