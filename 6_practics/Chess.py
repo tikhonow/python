@@ -415,12 +415,7 @@ class Board:
                 self.get_piece(row, 6).not_move = False
                 self.get_piece(row, 5).not_move = False
                 self.color = opponent(self.color)
-                return 'Ближняя рокировка успешна'
-        if type(self.get_piece(row, col)) == Pawn and \
-                (row == 6 and row1 == 7 and self.get_color_of_piece(row, col) == WHITE or
-                 row == 1 and row1 == 0 and self.get_color_of_piece(row, col) == BLACK) and\
-                self.move_and_promote_pawn(row, col, row1, col1, *char):
-            return 'Ход успешен'
+                return 'Ближняя рокировка успешна'y
         if not piece.can_move(self, row, col, row1, col1):
             return 'Эта фигура не может ходить в это место'
 
@@ -543,13 +538,18 @@ def main():
         if command == 'exit':
             break
         row, col, row1, col1 = parse_coords(command)
-        # выводит ошибку или успех
-        try:
-            print(board.move_piece(row, col, row1, col1))
-        except TypeError:
-            print('Введите букву фигуры')
-            char = input()
-            print(board.move_piece(row, col, row1, col1, char))
+        if (row1 == 0 or row1 == 7) and type(board.get_piece(row, col)) is Pawn:
+            print("Введите символ для превращения пешки")
+            print("Q - королева")
+            print("R - ладья")
+            print("N - конь")
+            print("B - слон")
+            symbol = input()
+            board.move_and_promote_pawn(row, col, row1, col1, symbol)
+        elif board.move_piece(row, col, row1, col1):
+            print('Ход успешен')
+        else:
+            print('Координаты некорректы! Попробуйте другой ход!')
 
 '''Запуск программы'''
 status = input('НАЧАТЬ ИГРУ?  Y / N '+ '\n')
