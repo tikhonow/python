@@ -472,7 +472,7 @@ class Board:
                 for piece, i, j in list_of_my_pieces:
                     if piece.can_move_at_all(self, i, j):
                         return False
-                print("ПАТ")
+                print('Белым объявлен пат') if color == WHITE else print('Черным объявлен пат')
                 exit()
 
             elif len(list_of_threatening_pieces) == 1:
