@@ -89,7 +89,7 @@ class Knight(Piece):
                abs((row - row1) * (col - col1)) == 2 and\
                super().can_move(board, row, col, row1, col1)
 
-    def can_move_at_all(self, board, row, col):
+    def can_attack(self, board, row, col):
         for i, j in [(row + 2, col + 1), (row + 1, col + 2), (row - 1, col + 2), (row - 2, col + 1),
                      (row + 2, col - 1), (row + 1, col - 2), (row - 1, col - 2), (row - 2, col - 1)]:
             if self.can_move(board, row, col, i, j):
@@ -116,7 +116,7 @@ class Bishop(Piece):
             return super().can_move(board, row, col, row1, col1)
         return False
 
-    def can_move_at_all(self, board, row, col):
+    def can_attack(self, board, row, col):
         for i, j in [(row + 1, col + 1), (row - 1, col + 1),
                      (row + 1, col - 1), (row - 1, col - 1)]:
             if self.can_move(board, row, col, i, j):
@@ -158,7 +158,7 @@ class Rook(Piece):
                 return False
         return super().can_move(board, row, col, row1, col1)
 
-    def can_move_at_all(self, board, row, col):
+    def can_attack(self, board, row, col):
         for i, j in [(row, col - 1), (row, col + 1),
                      (row - 1, col), (row + 1, col)]:
             if self.can_move(board, row, col, i, j):
@@ -216,7 +216,7 @@ class Pawn(Piece):
         else:
             return False
 
-    def can_move_at_all(self, board, row, col):
+    def can_attack(self, board, row, col):
         dir = 1 if self.get_color() == WHITE else -1
         for j in [col - 1, col, col + 1]:
             if self.can_move(board, row, col, row + dir, j):
@@ -233,9 +233,9 @@ class Queen(Bishop, Rook):
         return Bishop(self.get_color()).can_move(board, row, col, row1, col1) or\
                Rook(self.get_color(), not_move=False).can_move(board, row, col, row1, col1)
 
-    def can_move_at_all(self, board, row, col):
-        return Bishop(self.get_color()).can_move_at_all(board, row, col) or\
-               Rook(self.get_color(), not_move=False).can_move_at_all(board, row, col)
+    def can_attack(self, board, row, col):
+        return Bishop(self.get_color()).can_attack(board, row, col) or\
+               Rook(self.get_color(), not_move=False).can_attack(board, row, col)
 
 
 class King(Piece):
@@ -262,7 +262,7 @@ class King(Piece):
             return not board1.is_under_attack(row1, col1, opponent(self.get_color()))
         return False
 
-    def can_move_at_all(self, board, row, col):
+    def can_attack(self, board, row, col):
         for i in [row - 1, row, row + 1]:
             for j in [col - 1, col, col + 1]:
                 if self.can_move(board, row, col, i, j):
@@ -451,7 +451,7 @@ class Board:
         row, col = self.find_king(color)
         king = self.get_piece(row, col)
 
-        if king.can_move_at_all(self, row, col):
+        if king.can_attack(self, row, col):
             return False
         else:
             # поиск угрожающих фигур и своих фигур
@@ -470,7 +470,7 @@ class Board:
             # если зажали в тиски
             if len(list_of_threatening_pieces) == 0:
                 for piece, i, j in list_of_my_pieces:
-                    if piece.can_move_at_all(self, i, j):
+                    if piece.can_attack(self, i, j):
                         return False
                 print('Белым объявлен пат') if color == WHITE else print('Черным объявлен пат')
                 exit()
@@ -552,7 +552,7 @@ def main():
 '''Запуск программы'''
 status = input('НАЧАТЬ ИГРУ?  Y / N '+ '\n')
 if status == 'Y':
-    os.system("cls")
+    #os.system("cls")
     main()
 else:
     exit()
