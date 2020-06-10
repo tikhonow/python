@@ -334,13 +334,14 @@ class Board:
                 if self.get_piece(i, j) == King(color):
                     return i, j
 
-    def move_and_promote_pawn(self, row, col, row1, col1, *char):
+    def move_and_promote_pawn(self, row, col, row1, col1):
         pieces = {'Q': Queen(self.color), 'R': Rook(self.color, not_move=False),
                   'B': Bishop(self.color), 'N': Knight(self.color)}
         pawn = self.get_piece(row, col)
+        char = input('Кем вы хотите стать?')
         if pawn.can_move(self, row, col, row1, col1):
-            if char[0] in pieces:
-                self.field[row1][col1] = pieces[char[0]]
+            if char in pieces:
+                self.field[row1][col1] = pieces[char]
             else:
                 return False
             self.field[row][col] = None
@@ -415,7 +416,12 @@ class Board:
                 self.get_piece(row, 6).not_move = False
                 self.get_piece(row, 5).not_move = False
                 self.color = opponent(self.color)
-                return 'Ближняя рокировка успешна'y
+                return 'Ближняя рокировка успешна'
+        if type(self.get_piece(row, col)) == Pawn and \
+                (row == 6 and row1 == 7 and self.get_color_of_piece(row, col) == WHITE or
+                 row == 1 and row1 == 0 and self.get_color_of_piece(row, col) == BLACK) and\
+                self.move_and_promote_pawn(row, col, row1, col1):
+            return 'Превращение выполнено'
         if not piece.can_move(self, row, col, row1, col1):
             return 'Эта фигура не может ходить в это место'
 
@@ -538,18 +544,8 @@ def main():
         if command == 'exit':
             break
         row, col, row1, col1 = parse_coords(command)
-        if (row1 == 0 or row1 == 7) and type(board.get_piece(row, col)) is Pawn:
-            print("Введите символ для превращения пешки")
-            print("Q - королева")
-            print("R - ладья")
-            print("N - конь")
-            print("B - слон")
-            symbol = input()
-            board.move_and_promote_pawn(row, col, row1, col1, symbol)
-        elif board.move_piece(row, col, row1, col1):
-            print('Ход успешен')
-        else:
-            print('Координаты некорректы! Попробуйте другой ход!')
+        print(board.move_piece(row, col, row1, col1))
+
 
 '''Запуск программы'''
 status = input('НАЧАТЬ ИГРУ?  Y / N '+ '\n')
