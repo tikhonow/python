@@ -288,7 +288,7 @@ class Board:
             Pawn(WHITE), Pawn(WHITE), Pawn(WHITE), Pawn(WHITE),
             Pawn(WHITE), Pawn(WHITE), Pawn(WHITE), Pawn(WHITE)
         ]
-        #Внизеяя
+        #Вниз
         self.field[6] = [
             Pawn(BLACK), Pawn(BLACK), Pawn(BLACK), Pawn(BLACK),
             Pawn(BLACK), Pawn(BLACK), Pawn(BLACK), Pawn(BLACK)
@@ -338,7 +338,8 @@ class Board:
         pieces = {'Q': Queen(self.color), 'R': Rook(self.color, not_move=False),
                   'B': Bishop(self.color), 'N': Knight(self.color)}
         pawn = self.get_piece(row, col)
-        char = input('Кем вы хотите стать?')
+        char = input('Кем вы хотите стать?' + '\n' +'Ферзь - Q' + '\n' +'Ладья - R' \
+            + '\n' +'Слон - B' + '\n' +'Конь - N' + '\n')
         if pawn.can_move(self, row, col, row1, col1):
             if char in pieces:
                 self.field[row1][col1] = pieces[char]
@@ -464,7 +465,8 @@ class Board:
                         elif piece.get_color() == opponent(color) and \
                                 piece.can_move(self, i, j, row, col):
                             list_of_threatening_pieces.append((piece, i, j))
-
+            if len(list_of_threatening_pieces) > 0:
+                print('Белым шах') if color == WHITE else print('Черным шах')
             # если зажали в тиски
             if len(list_of_threatening_pieces) == 0:
                 for piece, i, j in list_of_my_pieces:
