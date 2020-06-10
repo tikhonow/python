@@ -13,7 +13,7 @@ class MyWidget(QWidget):
         self.sum = 0.0
         self.loadUI()
 
-        self.loadTable('8_practics/rating1.csv')
+        self.loadTable('rating1.csv')
 
     def loadUI(self):
         self.setGeometry(100, 100, 450, 300)

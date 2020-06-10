@@ -40,14 +40,6 @@ class Ui_MainWindow(object):
         self.label.setMaximumSize(QtCore.QSize(16777215, 90))
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setMaximumSize(QtCore.QSize(16777215, 90))
-        self.label_2.setObjectName("label_2")
-        self.verticalLayout.addWidget(self.label_2)
-        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit.setMaximumSize(QtCore.QSize(16777215, 90))
-        self.textEdit.setObjectName("textEdit")
-        self.verticalLayout.addWidget(self.textEdit)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.commandLinkButton = QtWidgets.QCommandLinkButton(self.centralwidget)
         self.commandLinkButton.setMaximumSize(QtCore.QSize(16777215, 90))
@@ -74,8 +66,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Залание B&C"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Залание C"))
         self.combo.setItemText(0, _translate("MainWindow", "Не выбрано"))
         self.label.setText(_translate("MainWindow", "Вы можете выбрать из выпадающего списка выше "))
-        self.label_2.setText(_translate("MainWindow", "или ввести трубемый жанр самостоятельно"))
         self.commandLinkButton.setText(_translate("MainWindow", "ПОИСК"))
