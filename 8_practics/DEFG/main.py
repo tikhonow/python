@@ -1,5 +1,4 @@
 import sys
-import time
 import sqlite3
 from PyQt5 import uic
 from PyQt5 import QtGui
@@ -7,7 +6,6 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QTextEdit, QTableWidgetItem
-
 
 class MyWindow(QMainWindow):
     data = []
@@ -47,8 +45,8 @@ class MyWindow(QMainWindow):
             ID = self.tableWidget.item(i, 0).text()
             NAME = self.tableWidget.item(i, 1).text()
             YEAR = self.tableWidget.item(i, 2).text()
-            DUR = self.tableWidget.item(i, 3).text()
-            to_check.append((ID, NAME, YEAR, DUR))
+            TIME = self.tableWidget.item(i, 3).text()
+            to_check.append((ID, NAME, YEAR, TIME))
             ID1 = str(self.data[i][0])
             NAME1 = str(self.data[i][1])
             YEAR1 = str(self.data[i][2])
@@ -60,40 +58,40 @@ class MyWindow(QMainWindow):
         self.con.commit()
 
     def find_name(self):
-        name = self.name.text()
+        name = self.name.toPlainText()
         self.data = self.cur.execute(f'SELECT * FROM Films WHERE Title LIKE \'%{name}%\'').fetchmany(100)
-        self.prnt()
+        self.show_data()
 
     def find_parametrs(self):
-        dur = self.dur.text().isnumeric()
-        year = self.year.text().isnumeric()
+        time = self.time.toPlainText().isnumeric()
+        year = self.year.toPlainText().isnumeric()
         f = self.combo.currentText()
         reguest = ''
         if f == 'не выбрано':
             reguest = 'SELECT * FROM Films'
-            if dur or year:
+            if time or year:
                 reguest += " WHERE "
-            if dur:
-                txt = self.dur.text()
+            if time:
+                txt = self.time.toPlainText()
                 reguest += f'duration = \'{txt}\''
-            if dur and year:
+            if time and year:
                 reguest += " AND "
             if year:
-                txt = self.year.text()
+                txt = self.year.toPlainText()
                 reguest += f'year = \'{txt}\''
         else:
             ID = self.cur.execute(f'SELECT * FROM Genres WHERE title = \'{f}\'').fetchall()
             reguest = f'SELECT * FROM Films WHERE genre = \'{ID[0][0]}\''
-            if dur:
-                txt = self.dur.text()
+            if time:
+                txt = self.time.toPlainText()
                 reguest += f' AND duration = \'{txt}\''
             if year:
-                txt = self.year.text()
+                txt = self.year.toPlainText()
                 reguest += f' AND year = \'{txt}\''
         self.data = self.cur.execute(reguest).fetchmany(100)
-        self.prnt()
+        self.show_data()
 
-    def prnt(self):
+    def show_data(self):
         self.tableWidget.setRowCount(0)
         for i, line in enumerate(self.data):
                 self.tableWidget.setRowCount(self.tableWidget.rowCount() + 1)
@@ -105,6 +103,55 @@ class MyWindow(QMainWindow):
                 self.tableWidget.setItem(i, 3, QTableWidgetItem(str(line[4])))
         self.tableWidget.resizeColumnsToContents()
         
+class Notice(QWidget):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('del.ui',self)
+        self.btn_yes.clicked.connect(self.yes)
+        self.btn_no.clicked.connect(self.no)
+
+    def yes(self):
+        del_func()
+        self.close()
+
+    def no(self):
+        self.close()
+
+def del_func():
+        indexes = main.tableWidget.selectionModel().selectedRows()
+        indexes.sort()
+        for i in range(len(indexes)-1, -1, -1):
+            main.cur.execute(f'DELETE from films WHERE id = \'{main.data[indexes[i].row()][0]}\'')
+            main.tableWidget.removeRow(indexes[i].row())
+        main.con.commit()
+
+class Add(QWidget):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('add.ui',self)
+        self.btnadd.clicked.connect(self.final)
+        ls = main.cur.execute(f'SELECT * FROM genres').fetchall()
+        ls = [elem[1] for elem in ls]
+        ls.sort()
+        self.comboadd.addItems(ls)
+
+    def final(self):
+        add_func()
+        self.close()
+        
+
+def add_func():
+    f = add.comboadd.currentText()
+    GENRE = main.cur.execute(f'SELECT * FROM Genres WHERE title = \'{f}\'').fetchall()
+    NAME = add.nameadd.text()
+    TIME = add.timeadd.text()
+    YEAR = add.yearadd.text()
+    if len(GENRE) != 0 and len(NAME) != 0 and len(TIME) != 0 and len(YEAR) != 0:
+        main.cur.execute(f'INSERT INTO films(title,duration,genre,year) VALUES(\'{NAME}\',\'{TIME}\',\'{GENRE[0][0]}\',\'{YEAR}\')')
+    add.nameadd.clear()
+    add.timeadd.clear()
+    add.yearadd.clear()
+    main.con.commit()
 
 
 if __name__ == '__main__':
