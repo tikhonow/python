@@ -179,7 +179,7 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="del">
+       <widget class="QPushButton" name="delet">
         <property name="styleSheet">
          <string notr="true">background-color: rgb(255, 85, 127);</string>
         </property>
