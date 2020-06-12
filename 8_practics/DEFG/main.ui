@@ -142,6 +142,9 @@ p, li { white-space: pre-wrap; }
         <property name="text">
          <string>Поиск</string>
         </property>
+        <property name="shortcut">
+         <string>Return</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -207,6 +210,9 @@ p, li { white-space: pre-wrap; }
   <action name="save">
    <property name="text">
     <string>Сохранить ✔</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
