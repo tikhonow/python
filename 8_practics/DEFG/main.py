@@ -14,8 +14,7 @@ class MyWindow(QMainWindow):
         uic.loadUi('main.ui',self)
         self.con = sqlite3.connect("films.db")
         self.cur = self.con.cursor()
-        self.find1.clicked.connect(self.find_name)
-        self.find2.clicked.connect(self.find_parametrs)
+        self.find2.clicked.connect(self.choice)
         title = ('ID','Название','Год','Продолжительность')
         self.tableWidget.setColumnCount(len(title))
         self.tableWidget.setRowCount(0)
@@ -29,32 +28,31 @@ class MyWindow(QMainWindow):
         ls.sort()
         self.combo.addItems(ls)
         self.save.triggered.connect(self.save_func)
-        self.delet.clicked.connect(self.del_prep)
-        self.add.clicked.connect(self.add_prep)
+        self.delet.clicked.connect(self.warning_delete)
+        self.add.clicked.connect(self.warning_add)
 
-    def add_prep(self):
+    def choice(self):
+        if self.checkBox.isChecked():
+            self.find_parametrs()
+        else:
+            self.find_name()
+
+    def warning_add(self):
         add.show()
 
-    def del_prep(self):
-        notice.show()
+    def warning_delete(self):
+        dele.show()
         
     def save_func(self):
-        to_check = []
-        from_check = []
+        new = []
         for i in range(len(self.data)):
             ID = self.tableWidget.item(i, 0).text()
             NAME = self.tableWidget.item(i, 1).text()
             YEAR = self.tableWidget.item(i, 2).text()
             TIME = self.tableWidget.item(i, 3).text()
-            to_check.append((ID, NAME, YEAR, TIME))
-            ID1 = str(self.data[i][0])
-            NAME1 = str(self.data[i][1])
-            YEAR1 = str(self.data[i][2])
-            DUR1 = str(self.data[i][4])
-            from_check.append((ID1, NAME1, YEAR1, DUR1))
-        for elem in to_check:
-            if elem not in from_check:
-                self.cur.execute(f'UPDATE films SET title = \'{elem[1]}\' WHERE id = \'{elem[0]}\'')
+            new.append((ID, NAME, YEAR, TIME))
+        for elem in new:
+            self.cur.execute(f'UPDATE films SET title = \'{elem[1]}\' WHERE id = \'{elem[0]}\'')
         self.con.commit()
 
     def find_name(self):
@@ -103,7 +101,7 @@ class MyWindow(QMainWindow):
                 self.tableWidget.setItem(i, 3, QTableWidgetItem(str(line[4])))
         self.tableWidget.resizeColumnsToContents()
         
-class Notice(QWidget):
+class Warning_del(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi('del.ui',self)
@@ -125,7 +123,7 @@ def del_func():
             main.tableWidget.removeRow(indexes[i].row())
         main.con.commit()
 
-class Add(QWidget):
+class Warning_add(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi('add.ui',self)
@@ -158,6 +156,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     main = MyWindow()
     main.show()
-    notice = Notice()
-    add = Add()
+    dele = Warning_del()
+    add = Warning_add()
     sys.exit(app.exec_())
