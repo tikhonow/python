@@ -14,14 +14,14 @@ for i in range(1,361):
 
 mult = 2
 pause = True
-running = True
+work = True
 color = pg.Color('white')
 hcolor = color.hsva
 
-while running:
+while work:
     for event in pg.event.get():
         if event.type == pg.QUIT:
-            running = False
+            work = False
         if event.type == pg.KEYDOWN and event.key == pg.K_SPACE and pause:
             pause = False
         if event.type == pg.KEYUP and event.key == pg.K_SPACE and not pause:

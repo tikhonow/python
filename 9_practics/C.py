@@ -6,18 +6,20 @@ array = []
 x0, y0, x1, y1 = 0, 0, 0, 0
 screen = pg.display.set_mode(size)
 pg.display.flip()
-running ,draw  = True, False
+work ,draw  = True, False
 WHITE = (255, 255, 255)
 
 def cancel():
     if len(array):
         del array[len(array)-1]
 
-while running:
+while work:
     screen.fill((0, 0, 0))
     for event in pg.event.get():
         if event.type == pg.QUIT:
-            running = False
+            work = False
+        if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            work = False
         if event.type == pg.MOUSEBUTTONDOWN:
             x0, y0 = event.pos[0], event.pos[1]
             x1, y1 = 0, 0
